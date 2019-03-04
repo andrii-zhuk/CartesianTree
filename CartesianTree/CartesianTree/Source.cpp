@@ -6,9 +6,9 @@ int main()
 	
 	Treap T;
 	
-	for (int i = 2; i < 20; i += 2)
+	for (int i = 0; i < 20; i += 2)
 	{
-		T.Add(i);
+		T.Insert(i);
 	}
 	T.print();
 	system("pause");

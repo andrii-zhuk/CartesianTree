@@ -62,12 +62,6 @@ private:
 			return make_pair(cur.first, new Treap(key, prior, cur.second, right));
 		}
 	}
-
-public:
-	Treap(int k = 0) : key(k), prior(rand()%100), left(nullptr), right(nullptr) {}
-	Treap(int k, int p) : key(k), prior(p), left(nullptr), right(nullptr) {}
-	Treap(int k, int p, Treap* l, Treap* r) : key(k), prior(p), left(l), right(r) {}
-
 	Treap* Add(int val)
 	{
 		int y = rand() % 100; // add random generator
@@ -88,6 +82,37 @@ public:
 		}
 		key = cur.first->key; prior = cur.first->prior; left = cur.first->left; right = cur.first->right;
 		return this;
+	}
+
+public:
+	Treap(int k = 0) : key(k), prior(rand()%100), left(nullptr), right(nullptr) {}
+	Treap(int k, int p) : key(k), prior(p), left(nullptr), right(nullptr) {}
+	Treap(int k, int p, Treap* l, Treap* r) : key(k), prior(p), left(l), right(r) {}
+	bool Find(int val)
+	{
+		if (key == val)
+			return true;
+		if (key < val)
+		{
+			if (left == nullptr)
+				return false;
+			return left->Find(val);
+		}
+		else
+		{
+			if (right == nullptr)
+				return false;
+			return right->Find(val);
+		}
+	}
+
+	Treap* Insert(int val)
+	{
+		if (this->Find(val))
+		{
+			return this;
+		}
+		return this->Add(val);
 	}
 
 	void print()
