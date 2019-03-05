@@ -18,7 +18,7 @@ private:
 
 	Treap* Add(int);
 public:
-	Treap(int k = 0) : key(k), prior(rand()%100), left(nullptr), right(nullptr) {}
+	Treap(int k = 0) : key(k), prior(rand()% 1000200), left(nullptr), right(nullptr) {}
 	Treap(int k, int p) : key(k), prior(p), left(nullptr), right(nullptr) {}
 	Treap(int k, int p, Treap* l, Treap* r) : key(k), prior(p), left(l), right(r) {}
 	

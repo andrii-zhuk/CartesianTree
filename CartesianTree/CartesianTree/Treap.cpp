@@ -38,7 +38,8 @@ pair<Treap*, Treap*> Treap::Split(int val)
 			return make_pair(this, right);
 		}
 		pair<Treap*, Treap*> cur = right->Split(val);
-		return make_pair(new Treap(key, prior, left, cur.first), cur.second);
+		right = cur.first;
+		return make_pair(this, cur.second);
 	}
 	else
 	{
@@ -47,13 +48,14 @@ pair<Treap*, Treap*> Treap::Split(int val)
 			return make_pair(left, this);
 		}
 		pair<Treap*, Treap*> cur = left->Split(val);
-		return make_pair(cur.first, new Treap(key, prior, cur.second, right));
+		left = cur.second;
+		return make_pair(cur.first,this);
 	}
 }
 
 Treap* Treap::Add(int val)
 {
-	int y = rand() % 100; // add random generator
+	int y = rand() % 1000020; // add random generator
 	Treap * t2 = new Treap(key, prior, left, right);
 	pair<Treap*, Treap*> cur = t2->Split(val);
 	Treap* toAdd = new Treap(val, y);
@@ -117,8 +119,8 @@ void Treap::print()
 
 Treap::~Treap()
 {
-	left->~Treap();
-	right->~Treap();
-	delete left;
-	delete right;
+	if (left != nullptr)
+		left->~Treap();
+	if (right != nullptr)
+		right->~Treap();
 }
