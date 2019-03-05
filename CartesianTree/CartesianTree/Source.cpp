@@ -60,17 +60,19 @@ int main()
 {
 	std::cout << "hi, cursova!" << endl;
 	
-	Treap T(0, 0);
-	auto t = clock();
-	for (int i = 0; i < 100000; i++)
+	Implicit T(0, 0);
+	//auto t = clock();
+	for (int i = 0; i < 5; i++)
 	{
-		T.Insert(i+1);
+		T.Add(i+1, i+2);
 	}
-	cout << double(clock() - t) / CLOCKS_PER_SEC << endl;
+	cout << T.Suma(2, 3) << endl;
+	cout << T.Min(2, 3) << endl;
+	//cout << double(clock() - t) / CLOCKS_PER_SEC << endl;
 	//T.Insert(100005);
 	//T.print();
 
-	t = clock();
+	/*t = clock();
 	pitem cur = new item(0, rand() % 1000000);
 	for (int i = 1; i < 100000; ++i)
 	{
@@ -78,7 +80,7 @@ int main()
 	}
 
 	cout << double(clock() - t) / CLOCKS_PER_SEC << endl;
-
+*/
 
 	system("pause");
 	return 0;

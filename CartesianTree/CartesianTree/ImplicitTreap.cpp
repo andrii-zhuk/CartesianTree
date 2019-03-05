@@ -53,6 +53,7 @@ pair<Implicit*, Implicit*> Implicit::Split(int val, int add = 0)
 			add += left->cnt;
 		}
 		pair<Implicit*, Implicit*> cur = right->Split(val, add);
+		upd_cnt();
 		return make_pair(new Implicit(value, prior, left, cur.first), cur.second);
 	}
 	else
@@ -71,7 +72,7 @@ pair<Implicit*, Implicit*> Implicit::Split(int val, int add = 0)
 Implicit* Implicit::Add(int v, int pos)
 {
 	int y = rand() % 100; // add random generator
-	Implicit * t2 = new Implicit(value, prior, left, right, cnt, suma);
+	Implicit * t2 = new Implicit(*this);
 	pair<Implicit*, Implicit*> cur = t2->Split(pos-1);
 	Implicit* toAdd = new Implicit(v, y);
 	if (cur.first == nullptr)
@@ -111,10 +112,26 @@ int Implicit::Suma(int l, int r)
 	if (r > cnt)
 		r = cnt;
 	pair<Implicit*, Implicit*> cur = Split(l - 1);
-	pair<Implicit*, Implicit*> cur2 = cur.second->Split(r-l+1);
+	pair<Implicit*, Implicit*> cur2 = cur.second->Split(r-l);
 	int ret = 0;
 	if (cur2.first != nullptr)
 		ret += cur2.first->suma;
+	cur.first->Merge(cur2.first->Merge(cur2.second));
+
+	return ret;
+}
+
+int Implicit::Min(int l, int r)
+{
+	if (l < 1)
+		l = 1;
+	if (r > cnt)
+		r = cnt;
+	pair<Implicit*, Implicit*> cur = Split(l - 1);
+	pair<Implicit*, Implicit*> cur2 = cur.second->Split(r - l);
+	int ret = 0;
+	if (cur2.first != nullptr)
+		ret += cur2.first->min;
 	cur.first->Merge(cur2.first->Merge(cur2.second));
 
 	return ret;
@@ -130,6 +147,4 @@ Implicit::~Implicit()
 	{
 		right->~Implicit();
 	}
-	delete left;
-	delete right;
 }
