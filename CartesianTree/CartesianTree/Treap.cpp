@@ -29,36 +29,40 @@ Treap* Treap::Merge(Treap* B)
 	}
 }
 
-pair<Treap*, Treap*> Treap::Split(int val)
+void Treap::Split(int val, Treap *& l, Treap *& r)
 {
 	if (key <= val)
 	{
 		if (right == nullptr)
 		{
-			return make_pair(this, right);
+			l = this;
+			r = right;
+			return;
 		}
-		pair<Treap*, Treap*> cur = right->Split(val);
-		right = cur.first;
-		return make_pair(this, cur.second);
+		right->Split(val, right, r);
+		l = this;
 	}
 	else
 	{
 		if (left == nullptr)
 		{
-			return make_pair(left, this);
+			l = left;
+			r = this;
+			return;
 		}
-		pair<Treap*, Treap*> cur = left->Split(val);
-		left = cur.second;
-		return make_pair(cur.first,this);
+		left->Split(val, l, left);
+		r = this;
 	}
 }
 
 Treap* Treap::Add(int val)
 {
-	int y = rand() % 1000020; // add random generator
+	int y = randomize(); // add random generator
 	Treap * t2 = new Treap(key, prior, left, right);
-	pair<Treap*, Treap*> cur = t2->Split(val);
+	pair<Treap*, Treap*> cur;
+	t2->Split(val, cur.first, cur.second);
 	Treap* toAdd = new Treap(val, y);
+	toAdd->Merge(cur.second);
 	if (cur.first == nullptr)
 	{
 		cur.first = toAdd;
@@ -66,10 +70,6 @@ Treap* Treap::Add(int val)
 	else
 	{
 		cur.first->Merge(toAdd);
-	}
-	if (cur.second != nullptr)
-	{
-		cur.first->Merge(cur.second);
 	}
 	key = cur.first->key; prior = cur.first->prior; left = cur.first->left; right = cur.first->right;
 	return this;
@@ -115,6 +115,11 @@ void Treap::print()
 		cout << "rightSon" << endl;
 		right->print();
 	}
+}
+
+int Treap::randomize()
+{
+	return rand() % 1000 * 1000000 + rand() % 1000*1000 + rand() % 1000;
 }
 
 Treap::~Treap()
