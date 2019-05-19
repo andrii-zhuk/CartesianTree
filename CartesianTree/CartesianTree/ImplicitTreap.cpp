@@ -1,150 +1,170 @@
 #include "ImplicitTreap.h"
-
-
-Implicit* Implicit::Merge(Implicit* B)
+int Implicit::randomizer()
 {
-	if (B == nullptr)
+	return distribution(generator);
+}
+
+Implicit::node::node()
+{
+	left = nullptr;
+	right = nullptr;
+	prior = 0;
+	subtree = 0;
+	value = 0;
+}
+
+Implicit::node::node(int _value, int _prior)
+{
+	left = nullptr;
+	right = nullptr;
+	prior = _prior;
+	value = _value;
+	subtree = 1;
+}
+
+Implicit::node::~node()
+{
+		
+}
+
+int Implicit::getSubtree(node* u)
+{
+	if (!u)
 	{
-		return this;
+		return 0;
 	}
-	int y1, y2;
-	y1 = prior;
-	y2 = B->prior;
-	if (y1 > y2)
+	return u->subtree;
+}
+
+void Implicit::update(node* u)
+{
+	if (u)
+		u->subtree = 1 + getSubtree(u->left) + getSubtree(u->right);
+}
+
+Implicit::node* Implicit::merge(node * t1, node * t2)
+{
+	if (!t1)
 	{
-		if (right == nullptr)
-		{
-			right = B;
-		}
-		else
-		{
-			right = right->Merge(B);
-		}
-		upd_cnt();
-		return this;
+		update(t2);
+		return t2;
+	}
+	if (!t2)
+	{
+		update(t1);
+		return t1;
+	}
+
+	if (t1->prior > t2->prior)
+	{
+		t1->right = merge(t1->right, t2);
+		update(t1);
+		return t1;
 	}
 	else
 	{
-		Implicit * t2 = new Implicit(value, prior, left, right);
-		value = B->value; prior = y2; left = t2->Merge(B->left); right = B->right;
-		upd_cnt();
-		return this;
+		t2->left = merge(t1, t2->left);
+		update(t2);
+		return t2;
 	}
 }
 
-
-pair<Implicit*, Implicit*> Implicit::Split(int val, int add = 0)
+pair<Implicit::node*, Implicit::node*> Implicit::split(node* t, int splitKey)
 {
-	int curKey = add;
-	if (left != nullptr)
+	if (!t)
 	{
-		curKey += left->cnt;
+		return make_pair(nullptr, nullptr);
 	}
-	if (curKey <= val)
+	int curKey = 0;
+	if (t->left)
 	{
-		if (right == nullptr)
-		{
-			upd_cnt();
-			return make_pair(this, right);
-		}
-		add += 1;
-		if (left != nullptr)
-		{
-			add += left->cnt;
-		}
-		pair<Implicit*, Implicit*> cur = right->Split(val, add);
-		upd_cnt();
-		return make_pair(new Implicit(value, prior, left, cur.first), cur.second);
+		curKey += (t->left)->subtree;
+	}
+	if (curKey <= splitKey)
+	{
+		pair<node*, node*> splitted = split(t->right, splitKey - curKey);
+		t->right = splitted.first;
+		update(t);
+		return make_pair(t, splitted.second);
 	}
 	else
 	{
-		if (left == nullptr)
-		{
-			upd_cnt();
-			return make_pair(left, this);
-		}
-		pair<Implicit*, Implicit*> cur = left->Split(val, add);
-		return make_pair(cur.first, new Implicit(value, prior, cur.second, right));
+		pair<node*, node*> splitted = split(t->left, splitKey);
+		t->left = splitted.second;
+		update(t);
+		return make_pair(splitted.first, t);
 	}
 }
 
-
-Implicit* Implicit::Add(int v, int pos)
+void Implicit::ARBTraversal(node *u)
 {
-	int y = rand() % 100; // add random generator
-	Implicit * t2 = new Implicit(*this);
-	pair<Implicit*, Implicit*> cur = t2->Split(pos-1);
-	Implicit* toAdd = new Implicit(v, y);
-	if (cur.first == nullptr)
+	if (!u)
+		return;
+	ARBTraversal(u->left);
+	cout << u->value << ' ';
+	ARBTraversal(u->right);
+}
+
+void Implicit::clear(node* u) {
+	if (!u)
 	{
-		cur.first = toAdd;
+		return;
 	}
-	else
+	clear(u->left);
+	clear(u->right);
+	delete u;
+}
+
+int Implicit::dfs(node* u)
+{
+	if (!u)
 	{
-		cur.first->Merge(toAdd);
+		return 0;
 	}
-	if (cur.second != nullptr)
-	{
-		cur.first->Merge(cur.second);
-	}
-	value = cur.first->value; prior = cur.first->prior; left = cur.first->left; right = cur.first->right;
-	upd_cnt();
-	return this;
+	return max(dfs(u->left), dfs(u->right)) + 1;
+}
+
+Implicit::Implicit()
+{
+	generator = default_random_engine(chrono::high_resolution_clock::now().time_since_epoch().count());
+	distribution = uniform_int_distribution<int>(0, 100000);
+	root = nullptr;
+}
+
+Implicit::Implicit(int _value)
+{
+	generator = default_random_engine(chrono::high_resolution_clock::now().time_since_epoch().count());
+	distribution = uniform_int_distribution<int>(0, 100000);
+	root = new node(_value, randomizer());
+}
+
+void Implicit::push_back(int _value)
+{
+	root = merge(root, new node(_value, randomizer()));
+}
+
+void Implicit::insertAt(int _value, int _pos)
+{
+	pair<node*, node*> splitted = split(root, _pos - 1);
+	splitted.first = merge(splitted.first, new node(_value, randomizer()));
+	root = merge(splitted.first, splitted.second);
 }
 
 void Implicit::print()
 {
-	if (left != nullptr)
-	{
-		left->print();
-	}
-	cout << value << " + " << prior << endl;
-	if (right != nullptr)
-	{
-		right->print();
-	}
+	ARBTraversal(root);
 }
 
-int Implicit::Suma(int l, int r)
+int Implicit::getHeight()
 {
-	if (l < 1)
-		l = 1;
-	if (r > cnt)
-		r = cnt;
-	pair<Implicit*, Implicit*> cur = Split(l - 1);
-	pair<Implicit*, Implicit*> cur2 = cur.second->Split(r-l);
-	int ret = 0;
-	if (cur2.first != nullptr)
-		ret += cur2.first->suma;
-	cur.first->Merge(cur2.first->Merge(cur2.second));
-
-	return ret;
+	return dfs(root);
 }
 
-int Implicit::Min(int l, int r)
+void Implicit::cleen()
 {
-	if (l < 1)
-		l = 1;
-	if (r > cnt)
-		r = cnt;
-	pair<Implicit*, Implicit*> cur = Split(l - 1);
-	pair<Implicit*, Implicit*> cur2 = cur.second->Split(r - l);
-	int ret = 0;
-	if (cur2.first != nullptr)
-		ret += cur2.first->min;
-	cur.first->Merge(cur2.first->Merge(cur2.second));
-
-	return ret;
+	clear(root);
 }
 
-Implicit::~Implicit()
-{
-	if (left != nullptr)
-	{
-		left->~Implicit();
-	}
-	if (right != nullptr)
-	{
-		right->~Implicit();
-	}
+Implicit::~Implicit() {
+	clear(root);
 }

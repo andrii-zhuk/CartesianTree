@@ -1,4 +1,17 @@
-﻿  ImplicitTreap.cpp
-  Source.cpp
-  Generating Code...
+﻿  ImplicitTreapOnArray.cpp
+c:\users\2ndri\documents\github\cartesiantree\cartesiantree\cartesiantree\implicittreaponarray.cpp(184): warning C4244: 'argument': conversion from '_Rep' to 'unsigned int', possible loss of data
+          with
+          [
+              _Rep=__int64
+          ]
+c:\users\2ndri\documents\github\cartesiantree\cartesiantree\cartesiantree\implicittreaponarray.cpp(192): warning C4244: 'argument': conversion from '_Rep' to 'unsigned int', possible loss of data
+          with
+          [
+              _Rep=__int64
+          ]
+c:\users\2ndri\documents\github\cartesiantree\cartesiantree\cartesiantree\implicittreaponarray.cpp(199): warning C4244: 'argument': conversion from '_Rep' to 'unsigned int', possible loss of data
+          with
+          [
+              _Rep=__int64
+          ]
   CartesianTree.vcxproj -> C:\Users\2ndri\Documents\GitHub\CartesianTree\CartesianTree\Debug\CartesianTree.exe

@@ -1,53 +1,44 @@
 #pragma once
-#include <vector>
-#include <iostream>
 using namespace std;
+#include <iostream>
+#include <algorithm>
+#include <random>
+#include <chrono>
+
 class Implicit
 {
 private:
-	Implicit *left;
-	Implicit *right;
-	int min;
-	int prior;
-	int value;
-	int cnt;
-	int suma;
+	default_random_engine generator;
+	uniform_int_distribution<int> distribution;
+	int randomizer();
+	struct node {
+		node* left;
+		node* right;
+		int prior;
+		int subtree;
+		int value;
+		node();
+		node(int _value, int _prior);
+		~node();
+	};
+	int getSubtree(node* u);
+	void update(node* u);
+	node* merge(node * t1, node * t2);
+	pair<node*, node*> split(node* t, int splitKey);
 
-	void upd_cnt() {
-		min = value;
-		suma = value;
-		cnt = 1;
-		if (left != nullptr)
-		{
-			if (left->min < min)
-				min = left->min;
-			suma += left->suma;
-			cnt += left->cnt;
-		}
-		if (right != nullptr)
-		{
-			if (right->min < min)
-				min = right->min;
-			suma += right->suma;
-			cnt += right->cnt;
-		}
-	}
+	void ARBTraversal(node *u);
+	int dfs(node* u);
+	void clear(node* u);
 
-	Implicit* Merge(Implicit*);
-
-	pair<Implicit*, Implicit*> Split(int, int);
-
+	node* root;
 public:
-	Implicit(int v = 0) : value(value), prior(rand() % 100), left(nullptr), right(nullptr), cnt(1), suma(v), min(v) {}
-	Implicit(int v, int p, Implicit* l = nullptr, Implicit* r = nullptr) : value(v), prior(p), left(l), right(r) {
-		upd_cnt();
-	}
-	Implicit(int v, int p, Implicit* l, Implicit* r, int c, int s, int m) : value(v), prior(p), left(l), right(r), cnt(c), suma(s), min(m) {}
-	
-	Implicit* Add(int, int);
+	Implicit();
+	Implicit(int _value);
+	void push_back(int _value);
+	void insertAt(int _value, int _pos);
 	void print();
-	int Min(int, int);
-	int Suma(int, int);
+	int getHeight();
+	void cleen();
 	~Implicit();
 };
 

@@ -2,6 +2,8 @@
 #include "Treap.h"
 #include "ImplicitTreap.h"
 #include <ctime>
+#include <set>
+#include "ImplicitTreapOnArray.h"
 using namespace std;
 
 struct item {
@@ -55,32 +57,26 @@ pitem unite(pitem l, pitem r) {
 	l->r = unite(l->r, rt);
 	return l;
 }
+ImplicitTreapOnArray T;
+int heights[1000];
+const int MAXN = 10;
+int arr[MAXN];
 
 int main()
 {
 	std::cout << "hi, cursova!" << endl;
 	
-	Implicit T(0, 0);
-	//auto t = clock();
-	for (int i = 0; i < 5; i++)
+	auto t = clock();
+	t = clock();
+	double avg = 0;
+	for (int j = 0; j < MAXN; ++j)
 	{
-		T.Add(i+1, i+2);
+		T.push_back(j + 2);
 	}
-	cout << T.Suma(2, 3) << endl;
-	cout << T.Min(2, 3) << endl;
-	//cout << double(clock() - t) / CLOCKS_PER_SEC << endl;
-	//T.Insert(100005);
-	//T.print();
-
-	/*t = clock();
-	pitem cur = new item(0, rand() % 1000000);
-	for (int i = 1; i < 100000; ++i)
-	{
-		insert(cur, new item(i, rand() % 1000000));
-	}
+	T.clear();
+	T.print2();
 
 	cout << double(clock() - t) / CLOCKS_PER_SEC << endl;
-*/
 
 	system("pause");
 	return 0;
